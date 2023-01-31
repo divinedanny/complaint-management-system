@@ -37,6 +37,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "student.apps.StudentConfig",
+    "complains.apps.ComplainsConfig",
+    "student_profiling.apps.StudentProfilingConfig",
+    "rest_framework.authtoken",
 ]
 
 MIDDLEWARE = [
@@ -48,6 +53,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
 
 ROOT_URLCONF = "complaint_management_system.urls"
 
@@ -69,6 +75,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "complaint_management_system.wsgi.application"
 
+# REST_FRAMEWORK = {
+#     'DEFAULT_FILTER_BACKENDS': [
+#         'django_filters.rest_framework.DjangoFilterBackend'
+#     ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ],
+# }
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
