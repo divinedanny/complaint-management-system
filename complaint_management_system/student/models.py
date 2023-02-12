@@ -1,15 +1,22 @@
-from curses.ascii import US
-from datetime import date, datetime
+from django.db import models
+from datetime import date
 import uuid
 from django.db import models
-from django.contrib.auth.models import (AbstractUser, User)
-
+from django.contrib.auth.models import AbstractUser, User
+from rest_framework.validators import UniqueValidator
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.utils.translation import gettext_lazy as _
 # Create your models here.
-class UserModel(models.Model):
+username_validation = UnicodeUsernameValidator()
+class UserModel(AbstractUser):
     
-    def profilePicture(instance, filename,user):
+    def profilePicture(instance, filename):
         user = AbstractUser.username
-        return f'profile_pictures/{user}/{filename}'
+        i = 0
+        while i < 0:
+            i +=1
+            filename= i
+        return f'profile_pictures/{user}/profile{filename}'
     
     undergraduate_level_choice = (
         ('100','100'),
@@ -76,22 +83,33 @@ class UserModel(models.Model):
     GENDER_CHOICES = (('M','Male'),
                       ('F','Female'),)
     
-    complain_id = models.UUIDField(default=uuid.uuid4, primary_key=True,editable=False)
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
-    matric_number = models.CharField(max_length=7, editable=False)
+    
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
+    username = models.CharField(_("username"),max_length=30, validators=[username_validation],error_messages={ "unique": _("A user with that username already exists."),},unique=True,help_text=_("Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."),)
+    first_name = models.CharField(_("first_name"),max_length=30)
+    last_name = models.CharField(_("last_name"),max_length=30)
+    email = models.EmailField(_("email"),unique=True, null=False, blank=False)
+    matric_number = models.CharField(max_length=7, unique=True,)
     course_of_study = models.CharField(max_length=50)
     level = models.CharField(choices=undergraduate_level_choice, max_length=3)
     school = models.CharField(choices=school_choice, max_length=80)
-    profile_picture = models.FileField(upload_to=profilePicture, null=True)
-    date_of_birth = models.DateField(max_length=8)
-    age = models.IntegerField(calculate_age)
+    profile_picture = models.FileField(upload_to=profilePicture, null=True, max_length=150, blank=True)
+    date_of_birth = models.DateField(max_length=8, null=True)
+    age = models.IntegerField(calculate_age, null=True)
     update = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     gender = models.CharField(choices=GENDER_CHOICES, max_length=6)
-   
+    
+    is_staff = models.BooleanField(_("staff status"),default=False,help_text=_("Designates whether the user can log into this admin site."))
+    is_active = models.BooleanField(_("active"),default=True,)
+    
+    def __str__(self):
+        self.username
+        return super().__str__()
+
+    # def save(self, *args, **kwargs):
+    #     self.full_clean()
+    #     return super().save(*args, **kwargs)
     
     
-    
-    
-    
-    
+    # ,validators=[UniqueValidator(queryset=User.objects.all())]

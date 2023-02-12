@@ -1,3 +1,4 @@
+from curses.ascii import NUL
 from django.db import models
 
 # Create your models here.
@@ -66,6 +67,16 @@ class ComplainsModel(models.Model):
          ('Social Work','Department of Social Work'),
     )
          
+    COMPLAIN_STATES = (
+        ('NOT SUBMITTED','NOT SUBMITTEED'),
+        ('SUBMITTED','SUBMITTED'),
+        ('INITIALIZED','INITIALIZED'),
+        ('RESOLVED','RESOLVED'),
+        ('CONFIRMED','CONFIRMED'),
+        ('FAILED','FAILED'),
+        ('COMPLETED', 'COMPLETED'),
+        ('START','START')
+    )
     
     department = models.CharField(max_length=30, choices=department_choice)
     complain = models.TextField(max_length=None)
@@ -75,6 +86,7 @@ class ComplainsModel(models.Model):
     matric_number = models.CharField(max_length=7)
     name = models.CharField(max_length=100)
     complain_upload = models.FileField(upload_to=upload, null=True)
+    complain_state = models.CharField(choices=COMPLAIN_STATES, default='START', null=False, max_length=20)
     
 
     def __str__(self):

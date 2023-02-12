@@ -1,14 +1,18 @@
-from urllib import response
+from cgitb import lookup
+from lib2to3.pgen2 import token
+from django.contrib.auth import login
 from django.shortcuts import render,redirect
-from .serializers import RegisterUserSerializer, UserSerializer, LoginSerializer
+from .serializers import RegisterUserSerializer, UserSerializer, LoginUserSerializer
 from rest_framework import generics, views, status
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from django.contrib.auth import get_user_model
 # Create your views here.
 
+User = get_user_model()
 # Login and registeration of users
 class RegisterUserView(generics.CreateAPIView):
     serializer_class = RegisterUserSerializer
@@ -27,9 +31,9 @@ class RegisterUserView(generics.CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
-class LoginUserView(views.APIView):
+class LoginUserView(generics.GenericAPIView):
     permission_classes = (AllowAny, )
-    serializer_class = LoginSerializer
+    serializer_class = LoginUserSerializer
     parser_classes = [MultiPartParser, FormParser]
 
     
@@ -44,10 +48,26 @@ class LoginUserView(views.APIView):
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # serializer.is_valid(raise_exception=True)
-        # user = serializer.validated_data['user']
-        # login(request, user)
-        # return user
 
+
+class UpdateUserView(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+    lookup_field = 'pk'
+    queryset = User.objects.all()
+
+class UserListAllView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    authentication_classes= [SessionAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
 # Update Profile, delete user,
+
+class LogoutUserView(generics.DestroyAPIView):
+    authentication_classes = [IsAuthenticated]
+    lookup_field='pk'
+    def post(self, request, *args, **kwargs):
+        self.delete('pk')
+        # request.user.auth_token.delete()

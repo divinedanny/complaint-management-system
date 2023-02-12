@@ -1,22 +1,23 @@
-from tkinter.tix import Tree
 import uuid
+from .models import UserModel
 from rest_framework import serializers
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.exceptions import ValidationError
-from rest_framework.validators import UniqueValidator
+from django.utils.translation import gettext_lazy as _
 
 
 class UserSerializer(serializers.ModelSerializer):
-    person_id = serializers.UUIDField(default=uuid.uuid4)
-    email = serializers.EmailField(
-        required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())])
     class Meta:
-        model = User
+        model = UserModel
         
-        fields = ('person_id','username', 'email', 'first_name', 'last_name', 'password')
+        fields = ('id','username', 'matric_number', 'email', 'first_name', 'last_name', 'password','course_of_study','level','school','profile_picture','date_of_birth','age','gender')
+        extra_kwarge = {'person_id':{'read_only':True},
+                        'paswsword': {'write_only': True},
+                        'email': {'required':True},
+                        'age': {'read_only': True}
+                        }
         
 
 
@@ -24,9 +25,10 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password']
+        model = UserModel
+        fields = ['username','matric_number', 'email', 'first_name', 'last_name', 'password','course_of_study','level','school','date_of_birth','gender','profile_picture']
         extra_kwargs = {'password':{'write_only': True},
+                        'matric-number': {'write_only':True,'required': True},
                         'first_name': {'required': True},
                         'last_name': {'required': True},
                         'email': {'required': True},}
@@ -36,15 +38,23 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        user = User.objects.create_user(username=validated_data['username'],
+        user = UserModel.objects.create(username=validated_data['username'],
                                         email=validated_data['email'],
                                         password=validated_data['password'],
                                         first_name=validated_data['first_name'],
-                                        last_name=validated_data['last_name'])
+                                        last_name=validated_data['last_name'],
+                                        matric_number=validated_data['matric_number'],
+                                        course_of_study=validated_data['course_of_study'],
+                                        level=validated_data['level'],
+                                        school=validated_data['school'],
+                                        date_of_birth=validated_data['date_of_birth'],
+                                        gender=validated_data['gender'],
+                                        profile_picture=validated_data['profile_picture'],
+                                        )
         return user
 
 
-class LoginSerializer(serializers.Serializer):
+class LoginUserSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
 
@@ -52,7 +62,9 @@ class LoginSerializer(serializers.Serializer):
         user = authenticate(**data)
         if user and user.is_active:
             return user
-        raise ValidationError(('Incorrect Credentials'))
+        raise ValidationError(_('Incorrect Credentials'))
 
+        
+        
         
         
