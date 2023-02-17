@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
         
-        fields = ('id','username', 'matric_number', 'email', 'first_name', 'last_name', 'password','course_of_study','level','school','profile_picture','date_of_birth','age','gender')
+        fields = ('id','username', 'matric_number', 'email', 'first_name', 'last_name', 'password','course_of_study','level','school','profile_picture','date_of_birth','gender')
         extra_kwarge = {'person_id':{'read_only':True},
                         'paswsword': {'write_only': True},
                         'email': {'required':True},
@@ -38,7 +38,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        user = UserModel.objects.create(username=validated_data['username'],
+        user = UserModel.objects.create_user(username=validated_data['username'],
                                         email=validated_data['email'],
                                         password=validated_data['password'],
                                         first_name=validated_data['first_name'],

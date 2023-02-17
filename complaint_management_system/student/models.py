@@ -1,22 +1,19 @@
 from django.db import models
-from datetime import date
+from datetime import datetime
 import uuid
 from django.db import models
-from django.contrib.auth.models import AbstractUser, User
-from rest_framework.validators import UniqueValidator
+from django.contrib.auth.models import AbstractUser, User, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
+from django.apps import apps
+from django.contrib.auth.hashers import make_password
 # Create your models here.
 username_validation = UnicodeUsernameValidator()
 class UserModel(AbstractUser):
     
     def profilePicture(instance, filename):
         user = AbstractUser.username
-        i = 0
-        while i < 0:
-            i +=1
-            filename= i
-        return f'profile_pictures/{user}/profile{filename}'
+        return f'profile_pictures/{user}/picture {filename}'
     
     undergraduate_level_choice = (
         ('100','100'),
@@ -66,20 +63,29 @@ class UserModel(AbstractUser):
          ('Political Science','Department of Political Science'),
          ('Social Work','Department of Social Work'),
     )
-    def calculate_age(self):
-        today = date.today()
-        born = self.date_of_birth
+    # def calculate_age(date_of_birth):
+        
+        # today = date.today()
+        # born = self.date_of_birth
 
-        try: 
-            birthday = self.date_of_birth.replace(year=today.year)
-        # raised when birth date is February 29 and the current year is not a leap year
-        except ValueError:
-            birthday = self.date_of_birth.replace(year=today.year, day=born.day-1)
+        # try: 
+        #     birthday = self.date_of_birth.replace(year=today.year)
+        # # raised when birth date is February 29 and the current year is not a leap year
+        # except ValueError:
+        #     birthday = self.date_of_birth.replace(year=today.year, day=born.day-1)
 
-        if birthday > today:
-            return today.year - born.year - 1
-        else:
-            return today.year - born.year
+        # if birthday > today:
+        #     return today.year - born.year - 1
+        # else:
+        #     return today.year - born.year
+        
+        
+    
+    def calculate_age(date_of_birth):
+        today = datetime.today()
+        age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+        return age
+    
     GENDER_CHOICES = (('M','Male'),
                       ('F','Female'),)
     
@@ -89,27 +95,68 @@ class UserModel(AbstractUser):
     first_name = models.CharField(_("first_name"),max_length=30)
     last_name = models.CharField(_("last_name"),max_length=30)
     email = models.EmailField(_("email"),unique=True, null=False, blank=False)
-    matric_number = models.CharField(max_length=7, unique=True,)
+    matric_number = models.CharField(max_length=7, unique=True,blank=True)
     course_of_study = models.CharField(max_length=50)
     level = models.CharField(choices=undergraduate_level_choice, max_length=3)
     school = models.CharField(choices=school_choice, max_length=80)
     profile_picture = models.FileField(upload_to=profilePicture, null=True, max_length=150, blank=True)
     date_of_birth = models.DateField(max_length=8, null=True)
-    age = models.IntegerField(calculate_age, null=True)
+    # age = models.IntegerField(calculate_age, null=True)
     update = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     gender = models.CharField(choices=GENDER_CHOICES, max_length=6)
     
     is_staff = models.BooleanField(_("staff status"),default=False,help_text=_("Designates whether the user can log into this admin site."))
-    is_active = models.BooleanField(_("active"),default=True,)
+    is_active = models.BooleanField(_("active"),default=True)
+    
+    
+    # @property
+    # def age(self):
+    #     calcutate = calculate_age()
+    #     return calcutate
     
     def __str__(self):
         self.username
         return super().__str__()
 
-    # def save(self, *args, **kwargs):
-    #     self.full_clean()
-    #     return super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
     
+    def _create_user(self, username, email, password, **extra_fields):
+        """
+        Create and save a user with the given username, email, and password.
+        """
+        if not username:
+            raise ValueError("The given username must be set")
+        email = self.normalize_email(email)
+        # Lookup the real model class from the global app registry so this
+        # manager method can be used in migrations. This is fine because
+        # managers are by definition working on the real model.
+        GlobalUserModel = apps.get_model(
+            self.model._meta.app_label, self.model._meta.object_name
+        )
+        username = GlobalUserModel.normalize_username(username)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.password = make_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, username, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", False)
+        extra_fields.setdefault("is_superuser", False)
+        return self._create_user(username, email, password, **extra_fields)
+
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self._create_user(username, email, password, **extra_fields)
+
     
     # ,validators=[UniqueValidator(queryset=User.objects.all())]

@@ -3,7 +3,7 @@ from lib2to3.pgen2 import token
 from django.contrib.auth import login
 from django.shortcuts import render,redirect
 from .serializers import RegisterUserSerializer, UserSerializer, LoginUserSerializer
-from rest_framework import generics, views, status
+from rest_framework import generics, status
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
