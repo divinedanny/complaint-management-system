@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from telnetlib import AUTHENTICATION
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +29,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#email configuration settings
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.gmail.com' 
+EMAIL_PORT = 465
+# EMAIL_HOST_USER = os.environ.get('GMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.environ.get('GMAIL_HOST_PASSWORD')
+
+EMAIL_HOST_USER = "divinedaniel2018@gmail.com"
+EMAIL_HOST_PASSWORD = "pxfnmjratghazhcg"
+
+
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'   
 
 
 # Application definition
@@ -42,6 +57,13 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "student",
     "complains",
+    # import INSTALLED APPS
+    'corsheaders',
+    'drf_yasg',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +74,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    #new imports
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 
@@ -68,6 +92,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                
             ],
         },
     },
@@ -75,14 +100,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "complaint_management_system.wsgi.application"
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_FILTER_BACKENDS': [
-#         'django_filters.rest_framework.DjangoFilterBackend'
-#     ],
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ],
-# }
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -114,6 +131,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+      'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+   'NON_FIELD_ERRORS_KEY': 'error'
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -136,7 +160,10 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
+CORS_ALLOWED_ORIGINS = [
+   "http://localhost:3000",
+   "http://127.0.0.1:8001"
+]
 
 
 AUTH_USER_MODEL = 'student.UserModel'

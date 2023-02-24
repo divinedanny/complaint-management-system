@@ -1,4 +1,3 @@
-import imp
 from django.shortcuts import render
 from rest_framework import serializers, generics
 from .models import ComplainsModel
@@ -13,6 +12,7 @@ class ComplainCreateView(generics.CreateAPIView):
     serializer_class = ComplainsSerializers
     authentication_classes= [authentication.SessionAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+
     
 class ComplainEditView(generics.UpdateAPIView):
     lookup_field = 'pk'
