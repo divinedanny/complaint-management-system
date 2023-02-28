@@ -5,11 +5,13 @@ from student.models import UserModel
 import uuid
 # Create your models here.
 class ComplainsModel(models.Model):
-    
-
-    
+        
     def upload(instance, filename):
-        return f"images/{filename}"
+        """
+        This function is used to upload the image to the database
+        """
+        image = f"images/{filename}"
+        return image
     
     department_choice = (
         ('admin','administration'),
@@ -25,22 +27,19 @@ class ComplainsModel(models.Model):
 
 
     COMPLAIN_STATES = (
-        ('NOT SUBMITTED','NOT SUBMITTEED'),
-        ('SUBMITTED','SUBMITTED'),
+        ('PENDING','PENDING'),
         ('INITIALIZED','INITIALIZED'),
         ('RESOLVED','RESOLVED'),
         ('CONFIRMED','CONFIRMED'),
         ('FAILED','FAILED'),
-        ('COMPLETED', 'COMPLETED'),
-        ('START','START')
     )
     
     id = models.UUIDField(default=uuid.uuid4(),primary_key=True, unique=True, editable=False)
     department = models.CharField(max_length=30, choices=department_choice)
     complain_message = models.TextField(max_length=None)
-    owner = models.ForeignKey(to=UserModel,on_delete=models.CASCADE, blank=True, null=True)
+    owner = models.ForeignKey(UserModel,on_delete=models.CASCADE, blank=True, null=True)
     complain_upload = models.FileField(upload_to=upload, null=True, blank=True)
-    complain_status = models.CharField(choices=COMPLAIN_STATES, default='START', null=False, max_length=20)
+    complain_status = models.CharField(choices=COMPLAIN_STATES, default='INITIALIZED', blank=False, null=False , max_length=20)
     created_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_date = models.DateTimeField(auto_now=True, blank=True, null=True)
     

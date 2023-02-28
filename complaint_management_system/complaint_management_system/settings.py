@@ -53,10 +53,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # "django.contrib.sites",
     "rest_framework",
     "rest_framework.authtoken",
     "student",
     "complains",
+    "staff",
     # import INSTALLED APPS
     'corsheaders',
     'drf_yasg',
@@ -76,6 +78,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     #new imports
     "corsheaders.middleware.CorsMiddleware",
+#     "student.middleware.SiteMiddleware",
+#     "staff.middleware.SiteMiddleware",
 ]
 
 

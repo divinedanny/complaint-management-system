@@ -1,5 +1,4 @@
 import email
-from pyexpat import model
 from django.db import models
 from datetime import datetime
 import uuid
@@ -54,14 +53,12 @@ class UserModel(AbstractUser):
     username = models.CharField(_("username"),max_length=30, validators=[username_validation],error_messages={ "unique": _("A user with that username already exists."),},unique=True,help_text=_("Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."), default='John_doe')
     first_name = models.CharField(_("first_name"),max_length=30, default='John')
     last_name = models.CharField(_("last_name"),max_length=30, default='Doe')
-    # email_vailidity= RegexField(), validators=email_vailidity
     email = models.EmailField(_("email"),unique=True, blank=False, default='default@gmail.com')
     profile_picture = models.FileField(upload_to=profilePicture, null=True, max_length=150, blank=True)
-    date_of_birth = models.DateField(max_length=8, null=True,auto_now_add=True)
+    date_of_birth = models.DateField(max_length=8, null=True)
     update = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True) 
     gender = models.CharField(choices=GENDER_CHOICES, max_length=6, default='M')
-    # password = models.CharField(max_length=128, editable=False)   regex="/^[\w-\._\+%]+@(live|hotmail|outlook|aol|yahoo|rocketmail|gmail|gmx\.com|mail.com|inbox.com|icloud|aim|yandex|zoho)\./", help_text="You must Use your Babcock Univeristy school email."
     phone_number = models.CharField(default='+234 000 0000', max_length=16)
     
     is_staff = models.BooleanField(_("staff status"),default=False,help_text=_("Designates whether the user can log into this admin site."))
@@ -118,6 +115,16 @@ class UserModel(AbstractUser):
             raise ValueError("Superuser must have is_staff=True.")
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
+
+        return self._create_user(username, email, password, **extra_fields)
+    
+    def create_staffuser(self, username, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_active", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+
 
         return self._create_user(username, email, password, **extra_fields)
     

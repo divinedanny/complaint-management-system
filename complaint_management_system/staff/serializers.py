@@ -1,4 +1,4 @@
-from .models import UserModel, StudentModel
+from .models import UserModel, StaffModel
 from rest_framework import serializers
 # from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -13,10 +13,10 @@ from django.contrib.auth.hashers import make_password
 # Create your serializers from here
 
 
-class StudentSerializer(serializers.ModelSerializer):
+class StaffSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StudentModel
-        fields = ('matric_number','course_of_study','level','school')
+        model = StaffModel
+        fields = ('staff_number', 'department')
         extra_kwarge = {'matric_number':{'read_only':True},
         }
 
@@ -32,11 +32,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
-    student = StudentSerializer()
+    staff = StaffSerializer()
     confirm_password = serializers.CharField(max_length=128,)
     class Meta:
         model = UserModel
-        fields = ('id','username', 'email', 'first_name', 'last_name', 'password','confirm_password','date_of_birth','gender','student', 'profile_picture')
+        fields = ('id','username', 'email', 'first_name', 'last_name', 'password','confirm_password','date_of_birth','gender','staff', 'profile_picture')
         extra_kwargs = {
                         'password':{'write_only': True,
                                     'required': True},
@@ -62,7 +62,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        student = validated_data.pop('student')
+        staff = validated_data.pop('staff')
         user = UserModel.objects.create_user(
                                         username=validated_data['username'],
                                         email=validated_data['email'],
@@ -73,8 +73,34 @@ class RegisterUserSerializer(serializers.ModelSerializer):
                                         gender=validated_data['gender'],
                                         profile_picture=validated_data['profile_picture'],
                                         )
-        StudentModel.objects.create(student=user, **student)
+        StaffModel.objects.create(staff=user, **staff)
         return user
+
+
+class VerifyUserSerializer(serializers.ModelSerializer):
+    token = serializers.CharField(max_length=555)
+    class Meta:
+        model = UserModel
+        fields = ("token")
+        
+        
+    
+            
+        
+
+class LoginUserSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=255, min_length=6)
+    username = serializers.CharField(read_only=True, max_length=255)
+    password = serializers.CharField(max_length=255, write_only=True)
+    
+
+    def validate(self, data):
+        user = authenticate(**data)
+        if user and user.is_active:
+            return user
+        raise ValidationError(_('Incorrect Credentials'))
+
+        
 
 class SetNewPasswordSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=555, min_length=1)
@@ -111,37 +137,6 @@ class SetNewPasswordSerializer(serializers.Serializer):
             return AuthenticationFailed('the reset link is invalid', 401)
         return super().validate(attrs)
         
-class VerifyUserSerializer(serializers.ModelSerializer):
-    token = serializers.CharField(max_length=555)
-    class Meta:
-        model = UserModel
-        fields = ("token")
-        extra_kwargs = {
-                        'password':{'write_only': True,
-                                   'required': True},
-                        'confirm_password':{'write_only': True,
-                                   'required': True},
-        }
-    
-    
-    
-            
-        
-
-class LoginUserSerializer(serializers.Serializer):
-    email = serializers.EmailField(max_length=255, min_length=6)
-    username = serializers.CharField(read_only=True, max_length=255)
-    password = serializers.CharField(max_length=255, write_only=True)
-    
-
-    def validate(self, data):
-        user = authenticate(**data)
-        if user and user.is_active:
-            return user
-        raise ValidationError(_('Incorrect Credentials'))
-
-        
-        
         
 class ForgotPasswordUserSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255, min_length=6)
@@ -158,6 +153,3 @@ class ForgotPasswordUserSerializer(serializers.Serializer):
         #     {'email': 'Email does not exist'})
             
         return super().validate(attrs)
-        
-        
-        

@@ -1,7 +1,6 @@
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.urls import reverse
-from django.http import HttpResponseRedirect
 from .models import UserModel
 from .serializers import RegisterUserSerializer, UserSerializer, LoginUserSerializer, VerifyUserSerializer, ForgotPasswordUserSerializer, SetNewPasswordSerializer
 from rest_framework import generics, status, views
@@ -41,14 +40,11 @@ class RegisterUserView(generics.CreateAPIView):
             current_site = get_current_site(request).domain
             relativeurl = reverse('verify-user') 
             absoluteurl = 'http://'+current_site+relativeurl+'?token='+str(email_token)
-            message=f"""Hi {user.username},\n
+            message=f"""HI,{user.username},\n
             Welcome to your complaint management system.\n
             please use the link below to verify your email address.\n
-            {absoluteurl}
-            \n
-            If you did not request this, please ignore this email.
-            \n 
-            Thanks for registering.
+            {absoluteurl}\n
+            If you did not request this, please ignore this email.        \n Thanks for registering.
             """
             receiver_email = (user.email,)
             data = {"message": message, 'subject': subject, 'to': receiver_email,}
@@ -89,8 +85,9 @@ class VerifyUserView(views.APIView):
         try:
             payload = jwt.decode(token, settings.SECRET_KEY)
             user = UserModel.objects.get(id=payload['user_id'])
-            if not user.is_verified:
+            if not user.is_verified and not user.is_staff:
                 user.is_verified = True
+                user.is_staff = True
                 user.save()
             return Response({"email": "User is verified and Successfully Activated!!"}, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError as expired:
@@ -139,7 +136,7 @@ class ForgotPasswordView(generics.GenericAPIView):
             uuid_bytes = force_bytes(user.id)
             uidb64 = urlsafe_base64_encode(uuid_bytes)
             token = PasswordResetTokenGenerator().make_token(user)
-            current_site = get_current_site(request).domain
+            current_site = get_current_site(request = request).domain
             relativeurl = reverse('password-reset-confirmed', kwargs={'uidb64': uidb64,'token': token}) 
             absoluteurl = 'http://'+current_site+relativeurl
             message=f"""
@@ -154,11 +151,9 @@ class ForgotPasswordView(generics.GenericAPIView):
             data = {"message": message, 'subject': subject, 'to': receiver_email,}
             print(data)
             Util.send_email(data)
-            return Response({'success': 'Your reset password link has been sent'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'failure': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)     
-  
-  
+        return Response({'success': 'Your reset password link has been sent'}, status=status.HTTP_200_OK)
+        
+        
         
 class PasswordResetView(generics.GenericAPIView):
     serializer_class = ForgotPasswordUserSerializer
@@ -185,8 +180,4 @@ class SetNewPasswordView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         return Response({'success': True, 'message': 'password request is successfully changed'}, status=status.HTTP_200_OK)
         
-        
-        
-        
- 
         
