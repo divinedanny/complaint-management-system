@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-%^rwx#@t5n)v)4o@zaz=jr3044@on04oe_ef6)qd^unfwfejb3"
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -33,11 +33,9 @@ ALLOWED_HOSTS = []
 EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.gmail.com' 
 EMAIL_PORT = 465
-# EMAIL_HOST_USER = os.environ.get('GMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = os.environ.get('GMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
-EMAIL_HOST_USER = "divinedaniel2018@gmail.com"
-EMAIL_HOST_PASSWORD = "pxfnmjratghazhcg"
 
 
 
@@ -53,7 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # "django.contrib.sites",
+    
     "rest_framework",
     "rest_framework.authtoken",
     "student",
@@ -62,6 +60,7 @@ INSTALLED_APPS = [
     # import INSTALLED APPS
     'corsheaders',
     'drf_yasg',
+    "django.contrib.sites",
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -78,8 +77,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     #new imports
     "corsheaders.middleware.CorsMiddleware",
-#     "student.middleware.SiteMiddleware",
-#     "staff.middleware.SiteMiddleware",
+    "django.contrib.sites.middleware.CurrentSiteMiddleware",
+    # "student.middleware.SiteMiddleware",
+    "staff.middleware.SiteMiddleware",
 ]
 
 
