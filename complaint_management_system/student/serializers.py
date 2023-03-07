@@ -1,4 +1,4 @@
-from .models import UserModel, StudentModel
+from .models import UserModel, StudentModel,StaffModel, Position
 from rest_framework import serializers
 # from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -19,6 +19,10 @@ class StudentSerializer(serializers.ModelSerializer):
         fields = ('matric_number','course_of_study','level','school')
         extra_kwarge = {'matric_number':{'read_only':True},
         }
+class StaffSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaffModel
+        fields = ('staff_number','deparpment')
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,6 +33,10 @@ class UserSerializer(serializers.ModelSerializer):
                         }
         
         
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = '__all__'
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):

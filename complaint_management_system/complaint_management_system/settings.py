@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 from telnetlib import AUTHENTICATION
 import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -33,8 +34,8 @@ ALLOWED_HOSTS = []
 EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.gmail.com' 
 EMAIL_PORT = 465
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 
 
@@ -56,7 +57,6 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "student",
     "complains",
-    "staff",
     # import INSTALLED APPS
     'corsheaders',
     'drf_yasg',
@@ -78,11 +78,7 @@ MIDDLEWARE = [
     #new imports
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
-    # "student.middleware.SiteMiddleware",
-    "staff.middleware.SiteMiddleware",
 ]
-
-
 ROOT_URLCONF = "complaint_management_system.urls"
 
 TEMPLATES = [
@@ -108,10 +104,19 @@ WSGI_APPLICATION = "complaint_management_system.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+DATABASE = {
+    'default':{
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_HOST_PASSWORD'),
+        'HOST': config('DB_HOST'),
     }
 }
 

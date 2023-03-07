@@ -14,34 +14,34 @@ from django.db.models import Q
 # Create your models here.
 username_validation = UnicodeUsernameValidator()
 
+
+
+class Position(models.Model):
+    is_student = models.BooleanField(default=False)
+    is_admin = models.BooleanField(_("is_admin"), default=False,help_text=_("Designates whether the user can log into this admin site."))
+    is_staff = models.BooleanField(_("staff status"),default=False,help_text=_("Designates whether the user can log into this staff site."))
+    
+    def position(self):
+        if self.is_student:
+            return 'Student'
+        elif self.is_admin:
+            return 'Admin'
+        elif self.is_staff:
+            return 'Staff'
+        else:
+            return 'Other'
+
 class UserModel(AbstractUser):
     
     def profilePicture(instance, filename):
         user = AbstractUser.username
         return f'profile_pictures/{user}/picture {filename}'
-
-    # def calculate_age(date_of_birth):
-        
-        # today = date.today()
-        # born = self.date_of_birth
-
-        # try: 
-        #     birthday = self.date_of_birth.replace(year=today.year)
-        # # raised when birth date is February 29 and the current year is not a leap year
-        # except ValueError:
-        #     birthday = self.date_of_birth.replace(year=today.year, day=born.day-1)
-
-        # if birthday > today:
-        #     return today.year - born.year - 1
-        # else:
-        #     return today.year - born.year
-        
-        
     
-    def calculate_age(date_of_birth):
-        today = datetime.today()
-        age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
-        return age
+    
+    # def calculate_age(date_of_birth):
+    #     today = datetime.today()
+    #     age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+    #     return age
     
     GENDER_CHOICES = (('M','Male'),
                       ('F','Female'),)
@@ -60,8 +60,10 @@ class UserModel(AbstractUser):
     created = models.DateTimeField(auto_now_add=True) 
     gender = models.CharField(choices=GENDER_CHOICES, max_length=6, default='M')
     phone_number = models.CharField(default='+234 000 0000', max_length=16)
+    position =models.ForeignKey(Position,max_length=10, on_delete=models.CASCADE)
     
-    is_staff = models.BooleanField(_("staff status"),default=False,help_text=_("Designates whether the user can log into this admin site."))
+    
+    #access level
     is_active = models.BooleanField(_("active"),default=True)
     is_verified = models.BooleanField(default=False)
     
@@ -123,7 +125,7 @@ class UserModel(AbstractUser):
         extra_fields.setdefault("is_active", True)
 
         if extra_fields.get("is_staff") is not True:
-            raise ValueError("Superuser must have is_staff=True.")
+            raise ValueError("Staffuser must have is_staff=True.")
 
 
         return self._create_user(username, email, password, **extra_fields)
@@ -202,10 +204,27 @@ class StudentModel(models.Model):
     )
     
     
-    student = models.OneToOneField(UserModel, on_delete=models.CASCADE)
+    student = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     matric_number = models.CharField(max_length=7, unique=True,blank=True)
     level = models.CharField(choices=undergraduate_level_choice, max_length=3)
     course_of_study = models.CharField(max_length=50)
     school = models.CharField(choices=school_choice, max_length=80)
 
 
+class StaffModel(models.Model):
+    
+    department_choice = (
+        ('admin','administration'),
+        ('busary','busary'),
+        ('security','security'),
+        ('hall','hall Adminstration'),
+        ('busa','student Administration'),
+        ('bumu','student Community Grade'),
+        ('registry','registry'),
+        ('cafeteria','Cafeteria')
+
+    )
+    
+    staff = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    staff_number = models.CharField(max_length=12, unique=True)
+    department = models.CharField(choices=department_choice,max_length=30)

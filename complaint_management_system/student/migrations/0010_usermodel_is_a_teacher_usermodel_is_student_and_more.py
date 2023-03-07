@@ -39,7 +39,6 @@ class Migration(migrations.Migration):
                 default="default@gmail.com",
                 max_length=254,
                 unique=True,
-                validators=[student.models.UserModel.validate_email_domain],
                 verbose_name="email",
             ),
         ),
