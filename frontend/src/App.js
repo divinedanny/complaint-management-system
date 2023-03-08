@@ -1,5 +1,4 @@
 import './App.css';
-import './student/homepage';
 
 
 function App() {
