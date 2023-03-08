@@ -117,6 +117,7 @@ DATABASE = {
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_HOST_PASSWORD'),
         'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
