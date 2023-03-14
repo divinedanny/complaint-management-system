@@ -13,9 +13,9 @@
   }
 }
 .text{
-  height: 50%;
+  height: 60%;
   padding-top: 90px;
-  padding-inline: 90px;
+  padding-inline: 60px;
 }
 .div2{
   background-color: #5733ff;
@@ -28,7 +28,7 @@
 }
 .btnbloc{
   display:block;
-  width:50%;
+  width:45%;
   margin: auto;
 }
 
@@ -54,4 +54,19 @@
   to {
     transform: rotate(360deg);
   }
+}
+.centerDiv{
+  margin:auto;
+}
+.right{
+  margin:right;
+}
+.md-7 {
+  width: 60.5%;
+}
+.ml-6 {
+  margin-left: 16%;
+}
+.fs-12{
+  font-size: 2rem;
 }
