@@ -3,11 +3,13 @@ import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import * as IoIcons from "react-icons/io";
 import * as RiIcons from "react-icons/ri";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Dashboard from "../student/Dashboard";
 
 export const SidebarData = [
 {
 	title: "Dashboard",
-	path: "/dashboard",
+	path:"/dashboard",
 	icon: <AiIcons.AiFillHome />,
 	iconClosed: <RiIcons.RiArrowDownSFill />,
 	iconOpened: <RiIcons.RiArrowUpSFill />
@@ -21,12 +23,6 @@ export const SidebarData = [
 
 	subNav: [
 	{
-		title: "Profile",
-		path: "/account-Setting/profile",
-		icon: <IoIcons.IoIosPaper />,
-		cName: "sub-nav",
-	},
-	{
 		title: "Change Password",
 		path: "/account-Setting/password",
 		icon: <IoIcons.IoIosPaper />,
@@ -35,19 +31,14 @@ export const SidebarData = [
 	],
 },
 {
-	title: "Complaints",
-	path: "/complaints",
+	title: "Add Complaints",
+	path: "/complaints/add",
 	icon: <FaIcons.FaEnvelopeOpenText />,
 
 	iconClosed: <RiIcons.RiArrowDownSFill />,
 	iconOpened: <RiIcons.RiArrowUpSFill />,
 
 	subNav: [
-	{
-		title: "Add Complaint",
-		path: "/complaints/add",
-		icon: <IoIcons.IoIosPaper />,
-	},
 	{
 		title: "Complaint History",
 		path: "/complaints/history",

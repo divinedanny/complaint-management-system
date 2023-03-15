@@ -6,9 +6,10 @@ import * as AiIcons from "react-icons/ai";
 import { SidebarData } from "./SidebarData";
 import SubMenu from "./SubMenu";
 import { IconContext } from "react-icons/lib";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Nav = styled.div`
-background: #15171c;
+background: #D9D9D9;
 height: 60px;
 display: flex;
 justify-content: flex-start;
@@ -48,18 +49,13 @@ const showSidebar = () => setSidebar(!sidebar);
 
 return (
 	<>
-	<IconContext.Provider value={{ color: "#fff" }}>
+	<IconContext.Provider value={{ color: "#000" }}>
 		<Nav>
 		<NavIcon to="#">
 			<FaIcons.FaBars onClick={showSidebar} />
 		</NavIcon>
-		<h4
-			style={{ textAlign: "center",
-					marginLeft: "20px",
-					color: "green" }}
-		>Complaint Management System</h4>
-            <div className ="right">
-			<button className="btn btnorange rounded">Logout</button></div>
+		<h4 className="ml-5 mr-5 align-end">Complaint Management System</h4>
+			<div className= "ml-5 text-center"><button className="btn btnorange rounded">Logout</button></div>
         	
 		</Nav>
 		<SidebarNav sidebar={sidebar}>
