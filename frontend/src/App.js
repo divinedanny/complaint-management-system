@@ -1,5 +1,4 @@
 import './App.css';
-import Homepage from './components/Homepage';
 // import Homepage from './components/Homepage';
 // import Register from './student/Register';
 // import Login from './student/login';

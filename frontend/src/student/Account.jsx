@@ -55,15 +55,15 @@ export const Password = () => {
             <div className="container div2 p-3 ml-5 mr-5 margin">
                 <form className="margin col-8 pb-5 pt-5" action="">
                     <div className="row m-3">
-                        <label htmlFor="">Old password</label>
+                        <label className="col-2">Old password</label>
                         <input className="form-control col-6 ml-5 mb-3" type="password" name="" id="" />
                     </div>
                     <div className="row m-3">
-                        <label htmlFor="">New password</label>
+                        <label className="col-2">New password</label>
                         <input className="form-control col-6 ml-5 mb-3" type="password" name="" id="" />
                     </div>
                     <div className="row m-3">
-                        <label htmlFor="">Confirm password</label>
+                        <label className="col-2">Confirm password</label>
                         <input className="form-control col-6 ml-3 mb-3" type="password" name="" id="" />
                     </div>
                     <button type="submit" class="btn btnorange margin rounded mt-4 mb-1 pl-5 pr-5">Change Password</button>
