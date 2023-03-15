@@ -15,7 +15,7 @@ export const SidebarData = [
 	iconOpened: <RiIcons.RiArrowUpSFill />
 },
 {
-	title: "Account",
+	title: "Profile",
 	path: "/account-Setting",
 	icon: <IoIcons.IoIosPaper />,
 	iconClosed: <RiIcons.RiArrowDownSFill />,

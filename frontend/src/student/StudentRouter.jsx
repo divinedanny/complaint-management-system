@@ -12,7 +12,7 @@ export const StudentRouter = () => {
         <Sidebar />
         <Routes>
           <Route exact path="/dashboard" element={<Dashboard />} />
-          <Route path="/account-Setting/profile" element={<Profile />} />
+          <Route path="/account-Setting" element={<Profile />} />
           <Route path="/account-Setting/password" element={<Password />} />
           <Route path="/complaints/add" element={<Add />} />
           <Route path="/complaints/history" element={<History />} />

@@ -70,3 +70,7 @@
 .fs-12{
   font-size: 2rem;
 }
+.margin{
+  margin: auto;
+  display:block;
+}
